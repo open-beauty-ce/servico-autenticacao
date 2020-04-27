@@ -1,0 +1,40 @@
+version: "3.1"
+
+services:
+  autenticacao:
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    volumes:
+      - .:/app
+    expose:
+      - 5000
+    ports:
+      - 9002:3000
+    environment:
+      MONGODB_URI: mongodb://root:root@db_autenticacao/autenticacao
+    depends_on:
+      - db_autenticacao
+    networks:
+      - autenticacao
+  db_autenticacao:
+    build:
+      context: .
+      dockerfile: docker/mongodb/Dockerfile
+    restart: always
+    volumes:
+      - mongodb_autenticacao:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: autenticacao
+    networks:
+      - autenticacao
+
+volumes:
+  mongodb_autenticacao:
+
+networks:
+  autenticacao:
+    external:
+      name: autenticacao
