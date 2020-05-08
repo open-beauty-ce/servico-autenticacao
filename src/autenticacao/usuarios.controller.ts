@@ -63,7 +63,7 @@ export class UsuariosController implements Usuario.Controller.Usuario {
 
   @GrpcMethod('UsuarioController', 'listarUsuarios')
   async listarUsuarios(params: Usuario.Input.FiltroUsuarios): Promise<Usuario.Usuarios> {
-    const usuarios = await this.usuarioModel.paginate(params?.filtro, {
+    const usuarios = await this.usuarioModel.paginate(params?.filtro || {}, {
       limit: params?.paginacao?.limite || 10,
       page: params?.paginacao?.pagina || 1,
       sort: params?.ordenacao,

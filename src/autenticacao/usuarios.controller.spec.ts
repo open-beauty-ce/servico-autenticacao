@@ -1,3 +1,4 @@
+import { ObjectID } from 'mongodb';
 import { TestingModule } from '@nestjs/testing';
 import { UsuariosController } from './usuarios.controller';
 import { UsuarioModel } from './models/usuario.model';
@@ -65,10 +66,24 @@ describe('Usuarios Controller', () => {
     await usuario.save();
 
     const resposta = await controller.pegarUsuario({
-      id: usuario._id.toHexString()
+      id: usuario._id.toHexString(),
     });
 
     expect(resposta.id).toEqual(usuario._id.toHexString());
+  });
+
+  it('deve retornar um erro tentar pegar um usuário inexistente', async () => {
+    let resposta;
+
+    try {
+      resposta = await controller.pegarUsuario({
+        id: `${new ObjectID()}`,
+      });
+    } catch (e) {
+      expect(e.message).toEqual('Usuário não encontrado');
+    }
+
+    expect(resposta).not.toBeDefined();
   });
 
   it('deve excluir um usuário pelo id', async () => {
@@ -77,7 +92,7 @@ describe('Usuarios Controller', () => {
     await usuario.save();
 
     const resposta = await controller.excluirUsuario({
-      id: usuario._id.toHexString()
+      id: usuario._id.toHexString(),
     });
 
     expect(resposta.sucesso).toBeTruthy();
@@ -90,14 +105,33 @@ describe('Usuarios Controller', () => {
 
     const resposta = await controller.atualizarUsuario({
       filtro: {
-        id: usuario._id.toHexString()
+        id: usuario._id.toHexString(),
       },
       dados: {
-        nome: 'Usuário Teste 2'
-      }
+        nome: 'Usuário Teste 2',
+      },
     });
 
     expect(resposta.nome).toEqual('Usuário Teste 2');
+  });
+
+  it('deve retornar um erro tentar atualizar um usuário inexistente', async () => {
+    let resposta;
+
+    try {
+      resposta = await controller.atualizarUsuario({
+        filtro: {
+          id: `${new ObjectID()}`,
+        },
+        dados: {
+          nome: 'Usuário Teste 2',
+        },
+      });
+    } catch (e) {
+      expect(e.message).toEqual('Usuário não encontrado');
+    }
+
+    expect(resposta).not.toBeDefined();
   });
 
   it('deve listar os usuários cadastrados', async () => {

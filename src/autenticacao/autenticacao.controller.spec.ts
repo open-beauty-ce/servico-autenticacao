@@ -123,7 +123,7 @@ describe('Autenticacao Controller', () => {
     await usuario.save();
 
     const resposta = await controller.usuarioAutenticado({
-      token: usuario.gerarToken(TipoToken.AUTENTICACAO, TempoHelper.dias(30))
+      token: usuario.gerarToken(TipoToken.AUTENTICACAO, TempoHelper.anos(1)),
     });
 
     expect(`${usuario._id}`).toEqual(resposta.id);
