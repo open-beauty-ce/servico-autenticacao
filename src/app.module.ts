@@ -7,8 +7,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AutenticacaoModule } from './autenticacao/autenticacao.module';
 
-jest.setTimeout(30000);
-
 @Module({
   imports: [
     ConfigModule.forRoot({
