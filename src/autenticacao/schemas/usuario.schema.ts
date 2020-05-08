@@ -60,6 +60,7 @@ UsuarioSchema.methods.gerarToken = function(tipo, tempoExpiracao) {
     iat,
     exp: iat + tempoExpiracao,
     tipo,
+    funcao: this.funcao,
   }, process.env.JWT_SECRET)
 };
 
