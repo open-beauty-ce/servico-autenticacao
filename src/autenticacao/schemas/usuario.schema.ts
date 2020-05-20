@@ -6,9 +6,10 @@ import * as jwt from 'jsonwebtoken';
 import { UsuarioEntity } from '../entities/usuario.entity';
 import { Funcao } from '../enums/funcao';
 import { ContatoSchema } from './contato.schema';
-import { UnauthorizedException } from '@nestjs/common';
 import { TipoToken } from '../enums/tipo.token';
 import { TempoHelper } from '../helpers/tempo.helper';
+import { Common } from 'descricao-servicos';
+import { RpcException } from '@nestjs/microservices';
 
 export const UsuarioSchema = new Schema<UsuarioEntity>({
   nome: {
@@ -29,7 +30,8 @@ export const UsuarioSchema = new Schema<UsuarioEntity>({
   },
   senha: {
     type: String,
-    required: [true, 'É necessário informar a sua senha']
+    required: [true, 'É necessário informar a sua senha'],
+    minlength: [6, 'A senha deve ter pelo menos 6 caracteres'],
   },
   funcao: {
     type: String,
@@ -78,9 +80,12 @@ UsuarioSchema.statics.autenticarUsuario = async function(email: string, senha: s
   const usuario: UsuarioEntity = await this.findOne({ email });
 
   if (!usuario || !bcrypt.compareSync(senha, usuario.senha)) {
-    throw new UnauthorizedException('E-mail e/ou senha incorretos');
+    throw new RpcException({ code: Common.GrpcStatus.UNAUTHENTICATED, message: 'E-mail e/ou senha incorretos' });
   } else if (!usuario.emailConfirmado) {
-    throw new UnauthorizedException('Confirme seu e-mail para poder ter acesso a sua conta');
+    throw new RpcException({
+      code: Common.GrpcStatus.PERMISSION_DENIED,
+      message: 'Confirme seu e-mail para poder ter acesso a sua conta',
+    });
   }
 
   return usuario.gerarToken(TipoToken.AUTENTICACAO, TempoHelper.dias(30));

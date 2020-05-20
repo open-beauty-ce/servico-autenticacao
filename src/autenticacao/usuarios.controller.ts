@@ -1,11 +1,12 @@
 import * as _ from 'lodash';
-import { Controller, NotFoundException } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { UsuarioModel } from './models/usuario.model';
 import { InjectModel } from '@nestjs/mongoose';
-import { Common, Usuario } from 'descricao-servicos';
-import { GrpcMethod } from '@nestjs/microservices';
+import { Common, Usuario, ValidationErrorFilter } from 'descricao-servicos';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 
 @Controller('usuarios')
+@UseFilters(ValidationErrorFilter)
 export class UsuariosController implements Usuario.Controller.Usuario {
 
   constructor(
@@ -19,7 +20,7 @@ export class UsuariosController implements Usuario.Controller.Usuario {
     const usuario = await this.usuarioModel.findById(params.filtro.id);
 
     if (!usuario) {
-      throw new NotFoundException('Usuário não encontrado');
+      throw new RpcException({ code: Common.GrpcStatus.NOT_FOUND, message: 'Usuário não encontrado' });
     }
 
     if (typeof params.dados === 'object' && params.dados) {
@@ -55,7 +56,7 @@ export class UsuariosController implements Usuario.Controller.Usuario {
     const usuario = await this.usuarioModel.findById(filtro.id);
 
     if (!usuario) {
-      throw new NotFoundException('Usuário não encontrado');
+      throw new RpcException({ code: Common.GrpcStatus.NOT_FOUND, message: 'Usuário não encontrado' });
     }
 
     return usuario.toGRPCMessage();

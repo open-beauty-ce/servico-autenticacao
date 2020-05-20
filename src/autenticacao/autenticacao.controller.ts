@@ -1,6 +1,6 @@
-import { Controller, UnauthorizedException } from '@nestjs/common';
-import { Usuario } from 'descricao-servicos';
-import { GrpcMethod } from '@nestjs/microservices';
+import { Controller } from '@nestjs/common';
+import { Common, Usuario } from 'descricao-servicos';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { UsuarioModel } from './models/usuario.model';
 
@@ -25,7 +25,7 @@ export class AutenticacaoController implements Usuario.Controller.Autenticacao {
     const usuario = await this.usuarioModel.encontrarPeloToken(params.token);
 
     if (!usuario) {
-      throw new UnauthorizedException('Usuário não autenticado');
+      throw new RpcException({ code: Common.GrpcStatus.UNAUTHENTICATED, message: 'Usuário não autenticado' });
     }
 
     return usuario.toGRPCMessage();
