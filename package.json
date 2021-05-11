@@ -39,7 +39,7 @@
     "descricao-servicos": "git+ssh://git@github.com:open-beauty-ce/definicao-servicos.git",
     "grpc": "^1.24.2",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.9",
